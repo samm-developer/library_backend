@@ -19,6 +19,32 @@ export function createApp() {
   // Serve uploaded files
   app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
+  app.get("/", (_req, res) => {
+    res.json({
+      name: "Library Management System API",
+      status: "running",
+      version: "1.0.0",
+      endpoints: {
+        health: "GET /api/health",
+        auth: {
+          register: "POST /api/auth/register",
+          login: "POST /api/auth/login",
+          me: "GET /api/auth/me",
+        },
+        fees: {
+          status: "GET /api/fees/status",
+          pay: "POST /api/fees/pay",
+        },
+        admin: {
+          stats: "GET /api/admin/stats",
+          students: "GET /api/admin/students",
+          defaulters: "GET /api/admin/defaulters",
+          student: "GET /api/admin/students/:id",
+        },
+      },
+    });
+  });
+
   app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 
   app.use("/api/auth", authRoutes);
