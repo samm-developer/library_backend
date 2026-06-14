@@ -11,5 +11,4 @@ export const config = {
   paidPeriodDays: Number(process.env.PAID_PERIOD_DAYS || 30),
   adminEmail: process.env.ADMIN_EMAIL || "admin@library.com",
   adminPassword: process.env.ADMIN_PASSWORD || "admin123",
-  clientOrigin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
 };

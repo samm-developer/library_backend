@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { config } from "./config/env.js";
 import authRoutes from "./routes/authRoutes.js";
 import feeRoutes from "./routes/feeRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -12,7 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export function createApp() {
   const app = express();
 
-  app.use(cors({ origin: config.clientOrigin }));
+  app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
