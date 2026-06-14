@@ -20,7 +20,7 @@ export function createApp() {
 
   app.get("/", (_req, res) => {
     res.json({
-      name: "Library Management System API",
+      name: "Library Management System test API",
       status: "running",
       version: "1.0.0",
       endpoints: {
