@@ -31,6 +31,8 @@ const userSchema = new mongoose.Schema(
     // Start and end timings selected at registration
     startTime: { type: String, default: "" },
     endTime: { type: String, default: "" },
+    // Assigned seat / chair number (1-300)
+    chairNumber: { type: Number, default: null },
 
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ["student", "admin"], default: "student" },

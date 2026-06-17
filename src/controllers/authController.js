@@ -30,6 +30,35 @@ function getHourValue(timeStr) {
   return hours;
 }
 
+function getOccupiedSlots(startTime, endTime) {
+  const start = getHourValue(startTime);
+  const end = getHourValue(endTime);
+  const slots = [];
+
+  if (start === end) {
+    for (let i = 0; i < 24; i++) {
+      slots.push(i);
+    }
+  } else if (start < end) {
+    for (let i = start; i < end; i++) {
+      slots.push(i);
+    }
+  } else {
+    for (let i = start; i < 24; i++) {
+      slots.push(i);
+    }
+    for (let i = 0; i < end; i++) {
+      slots.push(i);
+    }
+  }
+  return slots;
+}
+
+function hasOverlap(slots1, slots2) {
+  const set = new Set(slots1);
+  return slots2.some((slot) => set.has(slot));
+}
+
 export async function register(req, res) {
   try {
     const body = req.body;
@@ -70,6 +99,46 @@ export async function register(req, res) {
       calculatedHours = 24;
     }
 
+    const requestedSlots = getOccupiedSlots(body.startTime, body.endTime);
+
+    // Fetch all existing students with active chairs
+    const activeStudents = await User.find({
+      role: "student",
+      chairNumber: { $ne: null },
+    });
+
+    // Group active bookings by chairNumber
+    const chairAllocations = {};
+    for (let c = 1; c <= 300; c++) {
+      chairAllocations[c] = [];
+    }
+
+    for (const student of activeStudents) {
+      if (student.chairNumber >= 1 && student.chairNumber <= 300) {
+        const slots = getOccupiedSlots(student.startTime, student.endTime);
+        chairAllocations[student.chairNumber].push(slots);
+      }
+    }
+
+    // Find first chair that has no overlap with the requested slots
+    let assignedChair = null;
+    for (let c = 1; c <= 300; c++) {
+      const existingBookings = chairAllocations[c];
+      const hasOverlapOnChair = existingBookings.some((slots) =>
+        hasOverlap(slots, requestedSlots)
+      );
+      if (!hasOverlapOnChair) {
+        assignedChair = c;
+        break;
+      }
+    }
+
+    if (!assignedChair) {
+      return res
+        .status(400)
+        .json({ message: "No chair is available for the selected slot" });
+    }
+
     const user = await User.create({
       name: body.name,
       fatherName: body.fatherName,
@@ -83,6 +152,7 @@ export async function register(req, res) {
       startTime: body.startTime,
       endTime: body.endTime,
       hours: calculatedHours,
+      chairNumber: assignedChair,
       password: body.password,
       photo,
       idPhoto,
