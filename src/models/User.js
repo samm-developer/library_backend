@@ -28,6 +28,9 @@ const userSchema = new mongoose.Schema(
     idPhoto: { type: String, default: "" },
     // Daily study hours selected at registration (drives the fee)
     hours: { type: Number, required: true, min: 1 },
+    // Start and end timings selected at registration
+    startTime: { type: String, default: "" },
+    endTime: { type: String, default: "" },
 
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ["student", "admin"], default: "student" },

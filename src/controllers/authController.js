@@ -11,9 +11,24 @@ const REQUIRED_FIELDS = [
   "currentAddress",
   "permanentAddress",
   "idNumber",
-  "hours",
+  "startTime",
+  "endTime",
   "password",
 ];
+
+function getHourValue(timeStr) {
+  if (!timeStr) return 0;
+  const [time, modifier] = timeStr.split(" ");
+  let [hours] = time.split(":");
+  hours = parseInt(hours, 10);
+  if (modifier === "PM" && hours !== 12) {
+    hours += 12;
+  }
+  if (modifier === "AM" && hours === 12) {
+    hours = 0;
+  }
+  return hours;
+}
 
 export async function register(req, res) {
   try {
@@ -38,6 +53,15 @@ export async function register(req, res) {
       ? `/uploads/${req.files.idPhoto[0].filename}`
       : "";
 
+    const startVal = getHourValue(body.startTime);
+    const endVal = getHourValue(body.endTime);
+    let calculatedHours = endVal - startVal;
+    if (calculatedHours < 0) {
+      calculatedHours += 24;
+    } else if (calculatedHours === 0) {
+      calculatedHours = 24;
+    }
+
     const user = await User.create({
       name: body.name,
       fatherName: body.fatherName,
@@ -48,7 +72,9 @@ export async function register(req, res) {
       currentAddress: body.currentAddress,
       permanentAddress: body.permanentAddress,
       idNumber: body.idNumber,
-      hours: Number(body.hours),
+      startTime: body.startTime,
+      endTime: body.endTime,
+      hours: calculatedHours,
       password: body.password,
       photo,
       idPhoto,
