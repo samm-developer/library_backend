@@ -11,4 +11,6 @@ export const config = {
   paidPeriodDays: Number(process.env.PAID_PERIOD_DAYS || 30),
   adminEmail: process.env.ADMIN_EMAIL || "admin@library.com",
   adminPassword: process.env.ADMIN_PASSWORD || "admin123",
+  razorpayKeyId: process.env.RAZORPAY_KEY_ID || "rzp_test_5Wq3bUj1N4JzOp",
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || "super_secret_secret",
 };

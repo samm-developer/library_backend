@@ -10,6 +10,11 @@ const paymentSchema = new mongoose.Schema(
     periodEnd: { type: Date, required: true },
     // Simple mock transaction reference (no real gateway involved)
     reference: { type: String, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "success", "failed"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );
