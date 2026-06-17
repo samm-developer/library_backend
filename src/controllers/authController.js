@@ -41,6 +41,10 @@ export async function register(req, res) {
         .json({ message: `Missing required fields: ${missing.join(", ")}` });
     }
 
+    if (!/^\d{10}$/.test(body.mobile)) {
+      return res.status(400).json({ message: "Mobile number must be exactly 10 digits" });
+    }
+
     const existing = await User.findOne({ email: body.email.toLowerCase() });
     if (existing) {
       return res.status(409).json({ message: "Email is already registered" });
