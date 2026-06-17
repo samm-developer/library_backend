@@ -45,6 +45,10 @@ export async function register(req, res) {
       return res.status(400).json({ message: "Mobile number must be exactly 10 digits" });
     }
 
+    if (!/^[A-Z0-9]{1,12}$/.test(body.idNumber)) {
+      return res.status(400).json({ message: "Aadhar / PAN Number must be alphanumeric, uppercase, and maximum 12 characters" });
+    }
+
     const existing = await User.findOne({ email: body.email.toLowerCase() });
     if (existing) {
       return res.status(409).json({ message: "Email is already registered" });
