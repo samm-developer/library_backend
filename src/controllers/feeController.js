@@ -1,6 +1,7 @@
 import { config } from "../config/env.js";
 import { Payment } from "../models/Payment.js";
 import { feeStatus, monthlyFee } from "../utils/fee.js";
+import { dispatchNotification } from "../services/notificationService.js";
 
 // GET /api/fees/status  (current student)
 export async function getMyFeeStatus(req, res) {
@@ -40,6 +41,16 @@ export async function payFee(req, res) {
 
     user.paidUntil = periodEnd;
     await user.save();
+
+    // Payment confirmation email (non-blocking).
+    dispatchNotification({
+      user,
+      type: "payment_confirmation",
+      subject: "Fee payment received",
+      message: `We received your payment of ₹${amount} (ref ${reference}). Your seat fee is now paid until ${
+        periodEnd.toISOString().split("T")[0]
+      }.`,
+    });
 
     return res.status(201).json({
       message: "Payment successful",

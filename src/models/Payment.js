@@ -14,4 +14,8 @@ const paymentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Speed up per-user payment history and date-range revenue queries.
+paymentSchema.index({ user: 1, createdAt: -1 });
+paymentSchema.index({ periodEnd: 1 });
+
 export const Payment = mongoose.model("Payment", paymentSchema);

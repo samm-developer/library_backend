@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for high-traffic lookups (login, defaulter scans, role filters).
+// (email already has a unique index via `unique: true` on the field.)
+userSchema.index({ role: 1 });
+userSchema.index({ paidUntil: 1 });
+userSchema.index({ mobile: 1 });
+
 userSchema.pre("save", async function hashPassword(next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
